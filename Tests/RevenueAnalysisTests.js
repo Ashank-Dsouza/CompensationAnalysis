@@ -163,7 +163,7 @@ describe("Testing GetCreditType ....", () => {
 	});
 });
 
-describe.only("Testing GetCompensationDateRange()   ....", () => {
+describe("Testing GetCompensationDateRange()   ....", () => {
 
     it("Should return start date as 1/1/2021, end date as  when 'RD' is returned as credit type", () => {
 
