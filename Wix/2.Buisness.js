@@ -1,10 +1,13 @@
-//import wixUsers from 'wix-users';
-//import { fetch } from 'wix-fetch';
-//import wixData from 'wix-data';
-//import {GetCompensationDateRange, GetCreditType} from "public/BuisnessInfo";
-//import {AddBuisnessInfo} from 'public/BuisnessInfoDB';
+// import wixUsers from 'wix-users';
+// import { fetch } from 'wix-fetch';
+// import wixData from 'wix-data';
+// import { GetCompensationDateRange, GetCreditType } from "public/BuisnessInfo";
+// import { AddBuisnessInfo } from 'public/BuisnessInfoDB';
+// import { AppendBuisnessInfo } from 'public/Storage';
+// import { local } from 'wix-storage';
+// import wixLocation from 'wix-location';
 
-const API_END_POINT = "https://s3ezx1ppdc.execute-api.us-east-1.amazonaws.com/dev/tax/getFullName"
+const GetFullNameEndPoint = "https://s3ezx1ppdc.execute-api.us-east-1.amazonaws.com/dev/tax/getFullName"
 
 const OwnerRelativesDB = "ownersRelatives";
 
@@ -14,58 +17,94 @@ function GetCurrentUserId() {
     return userId;
 }
 
-function InsertOwnerRelativesIntoDB(RelativeNames, UserId) {
-    let id = RelativeNames['individual_id'].split('#')[0];
-    wixData.query(OwnerRelativesDB)
-    .eq("individual_id", id)
-    .find()
-    .then( (results) => {
-        if(results.items.length > 0) {
-            return;
+function GetName(relativeInfo) {
+    return relativeInfo.first_name + " " + relativeInfo.last_name;
+}
+
+function GetRelativeIndividualId(relativeInfo) {
+    const individualId =  relativeInfo['individual_id'].split('#')[0];
+    return individualId;
+}
+
+function IsIdInObjectArray(ObjectArray, Id) {
+    var IsInArray = false;
+    
+    for (let index = 0; index < ObjectArray.length; index++) {
+        const element = ObjectArray[index];
+        if(Id === element.individualId){
+            IsInArray = true;
+            break;
         }
-    })
-    .catch( (err) => {
-        let errorMsg = err;
-        console.log("Error in query: ", errorMsg);
-    });
-    let toInsert = {
-          "Last_name":  RelativeNames['last_name'],
-          "First_name": RelativeNames['first_name'],
-          "individual_id": RelativeNames['individual_id'],
-          "_owner":   UserId
-        };
-    wixData.insert(OwnerRelativesDB, toInsert)
-        .then((results) => {
-            let item = results; //see item below
+    }
+    return IsInArray;
+}
+
+function GetAllRelativeNameId(RelativeInfos) {
+    var relativeNameIds = [];
+
+    for (let index = 0; index < RelativeInfos.length; index++) {
+        const relativeInfo = RelativeInfos[index];
+
+        const relativeName = GetName(relativeInfo);
+        const relativeId = GetRelativeIndividualId(relativeInfo);
+
+        if(!IsIdInObjectArray(relativeNameIds, relativeId)){
+            var relativeNameId = {
+                "individualId": relativeId,
+                "fullName": relativeName
+            }
+            relativeNameIds.push(relativeNameId);
+        }
+
+    }
+    return relativeNameIds; 
+}
+
+function InsertOwnerRelativesIntoDB(relativeInfo, UserId) {
+    const relativeNameIds = GetAllRelativeNameId(relativeInfo);
+
+    let toUpdate = {
+        "_owner": UserId,
+        "ownerrelatives": relativeNameIds
+    };
+    // wixData.insert(OwnerRelativesDB, toUpdate)
+    //     .then((results) => {
+    //         let item = results; //see item below
+    //         console.log("inserted this row: ", item);
+    //     })
+    //     .catch((err) => {
+    //         let errorMsg = err;
+    //     });
+    wixData.update(OwnerRelativesDB, toUpdate)
+    	.then( (results) => {
+    		let item = results; //see item below
             console.log("inserted this row: ", item);
-        })
-        .catch((err) => {
-            let errorMsg = err;
-            console.log("the row was not inserted into the DB: ", errorMsg);
-        });
+        	} )
+        	.catch( (err) => {
+        		let errorMsg = err;
+                console.log("could not update or insert row: ", err);
+        	} );
 }
 
 function GetRelativeInformation() {
     const UserId = GetCurrentUserId();
 
-    const API_END_POINT_WITH_USER_ID = API_END_POINT + '?userID=' + UserId;
-    console.log(API_END_POINT_WITH_USER_ID);
-    fetch(API_END_POINT_WITH_USER_ID, {
-        method: 'GET', // or 'PUT'
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-        data.forEach(d => {
-            InsertOwnerRelativesIntoDB(d, UserId);
+    const GetNameURL = GetFullNameEndPoint + '?userID=' + UserId;
+    console.log("calling ", GetNameURL);
+    fetch(GetNameURL, {
+            method: 'GET', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(relativeInfo => {
+            console.log('Success: ', relativeInfo);
+            InsertOwnerRelativesIntoDB(relativeInfo, UserId);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
         });
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
 }
 
 function GetUserInput() {
@@ -86,9 +125,9 @@ function GetUserInput() {
 }
 
 function GetIsRevenueLessThanMillion(RawRevenue) {
-    if(RawRevenue === "LessThanMillion"){
+    if (RawRevenue === "LessThanMillion") {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -110,18 +149,18 @@ function GetStateCode(address) {
 
     var stateCodeAndPinCode = null;
 
-    if(arrLen >= 2){
-        stateCodeAndPinCode = addressArray[arrLen-2]
-    }else{
+    if (arrLen >= 2) {
+        stateCodeAndPinCode = addressArray[arrLen - 2]
+    } else {
         return null;
     }
 
-   return GetOnlyChars(stateCodeAndPinCode);
+    return GetOnlyChars(stateCodeAndPinCode);
 }
 
 function GetBuisnessInfo() {
     var userInput = GetUserInput();
-    
+
     var IsRevenueLessThanMillion = GetIsRevenueLessThanMillion(userInput.revenue);
     var stateCode = GetStateCode(userInput.stateCode);
     var universalBuisnessStartDate = GetUniversalDate(userInput.buisnessStartDate);
@@ -136,8 +175,9 @@ function GetBuisnessInfo() {
     return BuisnessInfo;
 }
 
-function OnClickContinue() { 
-    //GetRelativeInformation();
+function OnClickContinue() {
+    GetRelativeInformation();
+    local.removeItem("buisnessData");
 
     var BuisnessInfo = GetBuisnessInfo();
 
@@ -152,15 +192,21 @@ function OnClickContinue() {
         //GetCurrentUserId()
     }
 
-console.log("the buisnessInfo", buisnessInfo);
+    console.log("the buisnessInfo", buisnessInfo);
 
-function getRandomId(max) {
-    var randowInt =  Math.floor(Math.random() * max);
-    return randowInt.toString();
-  }
+    function getRandomId(max) {
+        var randowInt = Math.floor(Math.random() * max);
+        return randowInt.toString();
+    }
+    local.removeItem("buisnessInfo");
+    AppendBuisnessInfo("buisnessInfo", buisnessInfo);
 
-//AddBuisnessInfo(buisnessInfo);
+    console.log("the buisnessData is: ", local.getItem("buisnessData"));
+
+    console.log("moving to owner relatives page....");
+
+    //wixLocation.to('/owner-relatives')
 
 }
 
-module.exports = { GetStateCode }
+module.exports = { GetName, GetRelativeIndividualId, IsIdInObjectArray, GetAllRelativeNameId }

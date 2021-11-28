@@ -40,7 +40,7 @@ function LoadNameOptions() {
         .eq("_owner", UserId)
         .find()
         .then((results) => {//owner-relatives
-        console.log("the results are: ", results);
+            console.log("the results are: ", results);
             //console.log("the relative names are: ", results.items);
             const row = results.items[4];
             const relativeList = row["ownerrelatives"];
