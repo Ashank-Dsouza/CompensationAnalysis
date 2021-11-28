@@ -57,14 +57,13 @@ function getCheckboxOptions(Items) {
     var checkboxOptions = [];
     //check if valid
     for (let index = 0; index < Items.length; index++) {
-        const payrollItem = Items[index];
-        if (payrollItem.hasOwnProperty('First_name') && payrollItem.hasOwnProperty('Last_name')) { // Check if valid
-            var option = {
-                "label": payrollItem['First_name'] + ' ' + payrollItem['Last_name'],
-                "value": payrollItem['_id']
-            };
-            checkboxOptions.push(option);
-        }
+        const relativeName = Items[index].fullName;
+        const relativeIndividualId = Item[index].individualId;
+        var option = {
+                "label": relativeName,
+                "value": relativeIndividualId
+        };
+        checkboxOptions.push(option);
     }
     console.log("the options being set are.....");
     console.log(checkboxOptions);
