@@ -34,7 +34,7 @@ function GetCurrentUserId() {
 }
 
 function LoadNameOptions() {
-    const UserId = GetCurrentUserId();
+    const UserId = GetCurrentUserId(); //my userid: b7011a8c-6275-458f-a088-371bef871f53
     console.log("loading relatives for current user: ", UserId);
     wixData.query(OwnerRelativesDB)
         .eq("userId", UserId)

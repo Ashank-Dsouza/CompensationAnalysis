@@ -49,10 +49,7 @@ function GetAllRelativeNameId(RelativeInfos) {
         const relativeId = GetRelativeIndividualId(relativeInfo);
 
         if(!IsIdInObjectArray(relativeNameIds, relativeId)){
-            var relativeNameId = {
-                "individualId": relativeId,
-                "fullName": relativeName
-            }
+            var relativeNameId = relativeName + "@" + relativeId;
             relativeNameIds.push(relativeNameId);
         }
 
@@ -66,7 +63,7 @@ async function InsertOwnerRelativesIntoDB(relativeInfo, UserId) {
     console.log("the result of get on ", UserId, " is ", result);
 
     let toUpdate = {
-        "_owner": UserId,
+        "userid": UserId,
         "ownerrelatives": relativeNameIds,
         "_id": UserId
     };
