@@ -95,9 +95,9 @@ async function InsertOwnerRelativesIntoDB(relativeInfo, UserId) {
 function GetRelativeInformation() {
     const UserId = GetCurrentUserId();
 
-    const GetNameURL = GetFullNameEndPoint + '?userID=' + UserId;
-    console.log("calling ", GetNameURL);
-    fetch(GetNameURL, {
+    const URL = GetFullNameEndPoint + '?userID=' + UserId;
+    console.log("calling ", URL);
+    fetch(URL, {
             method: 'GET', // or 'PUT'
             headers: {
                 'Content-Type': 'application/json',

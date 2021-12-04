@@ -57,11 +57,12 @@ function getCheckboxOptions(Items) {
     var checkboxOptions = [];
     //check if valid
     for (let index = 0; index < Items.length; index++) {
-        const relativeName = Items[index].fullName;
-        const relativeIndividualId = Item[index].individualId;
+        var nameIdCancatenatedStr = Items[index];
+        const fullName = nameIdCancatenatedStr.split("@")[0];
+        const individualId = nameIdCancatenatedStr.split("@")[1];
         var option = {
-                "label": relativeName,
-                "value": relativeIndividualId
+                "label": fullName,
+                "value": individualId
         };
         checkboxOptions.push(option);
     }
