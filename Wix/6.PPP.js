@@ -1,11 +1,9 @@
-// API Reference: https://www.wix.com/velo/reference/api-overview/introduction
-// “Hello, World!” Example: https://learn-code.wix.com/en/article/1-hello-world
-// post request from here to lambda
-// pass the last three forms data here as payload.
 import wixData from 'wix-data';
 import wixUsers from 'wix-users';
-import { AppendBuisnessInfo, GetBuisnessData } from 'public/Storage';
-import {local} from 'wix-storage';
+import { AppendBuisnessInfo } from 'public/Storage';
+import {GetUserDetails} from 'public/Storage';
+import { local } from 'wix-storage';
+
 const buisnessDataKey = "buisnessData";
 
 
@@ -14,7 +12,7 @@ const OwnerRelativesDB = "ownersRelatives";
 const BusinessInfoDB = "businessInfo";
 
 $w.onReady(function () {
-	$w('#ppp2continue').onClick(GatherDataAndSendToBackend);
+    $w('#ppp2continue').onClick(GatherDataAndSendToBackend);
 });
 
 function GetCurrentUserId() {
@@ -24,65 +22,60 @@ function GetCurrentUserId() {
     return userId.toString();
 }
 
+
+
 function PostToBackend(relatives, business_info) {
-    //fconsole.log(business_info);
-    var body = JSON.stringify({
-            'business_info': business_info,
-            'relatives': relatives
-        });
+
+    var userDetails = GetUserDetails()
+    var body = JSON.stringify(userDetails);
     console.log("Posting to backend: ", body)
-    //console.log("the user id is : ", GetCurrentUserId());
-    const url = API_ENDPOINT + "?userID="+GetCurrentUserId();
+    const url = API_ENDPOINT + "?userID=" + GetCurrentUserId();
     console.log("the url is : ", url);
-	fetch(url, {
+    fetch(url, {
         method: 'POST',
         headers: {
-         'Accept': 'application/json',
-         'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
 
-       },
+        },
         //empty->body
         body: body
     })
-    .then(response => {
-        return response.text();
-    })
-    .then(data => {
-        console.log('Success. The response is: ', data);
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
+        .then(response => {
+            return response.text();
+        })
+        .then(data => {
+            console.log('Success. The response is: ', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
 }
 
-
-
-
-
-function AddDetailsToBuisnessData(){
+function AddBuisnessDetailsToStore() {
     const loanAmount = $w('#loanAmount1').value;
-	const loanDate = $w('#loan2date').value;
-	const loanNonPayrollExpense = $w('#loan1nonpayroll2').value;
+    const loanDate = $w('#loan2date').value;
+    const loanNonPayrollExpense = $w('#loan1nonpayroll2').value;
 
-    	const loanData = {
-		"loanAmount": loanAmount,
-		"loanDate": loanDate,
-		"loanNonPayrollExpense": loanNonPayrollExpense
-	}
+    const loanData = {
+        "loanAmount": loanAmount,
+        "loanDate": loanDate,
+        "loanNonPayrollExpense": loanNonPayrollExpense
+    }
 
     AppendBuisnessInfo("loanDataTwo", loanData);
 
-	console.log("the businessData is now: ", local.getItem(buisnessDataKey));
+    console.log("the businessData is now: ", local.getItem(buisnessDataKey));
 }
 
 function GatherDataAndSendToBackend() {
-    AddDetailsToBuisnessData();
+    AddBuisnessDetailsToStore();
 
 
     let relatives;
     wixData.query(OwnerRelativesDB)
         .eq("_owner", GetCurrentUserId())
-		//.eq("excluded", true)
+        //.eq("excluded", true)
         .find()
         .then((results) => {
             console.log("The excluded relatives are: ", results.items);
