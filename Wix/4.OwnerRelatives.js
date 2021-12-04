@@ -35,14 +35,14 @@ function GetCurrentUserId() {
 
 function LoadNameOptions() {
     const UserId = GetCurrentUserId();
-    console.log("the user id is: ", UserId);
+    console.log("loading relatives for current user: ", UserId);
     wixData.query(OwnerRelativesDB)
-        .eq("_owner", UserId)
+        .eq("userId", UserId)
         .find()
         .then((results) => {//owner-relatives
             console.log("the results are: ", results);
             //console.log("the relative names are: ", results.items);
-            const row = results.items[4];
+            const row = results.items[0];
             const relativeList = row["ownerrelatives"];
             console.log("relativeList ", relativeList);
             SetOptions(relativeList);
@@ -76,16 +76,5 @@ export function OnClickContinue() { // TODO: connect to continue button
     AppendBuisnessInfo("selectedRelatives", selections);
 
     console.log("the buisnessData is: ", local.getItem("buisnessData"));
-
-    for (var selection in selections) {
-        wixData.get(OwnerRelativesDB, selection)
-            .then((item) => {
-                item.excluded = true;
-                wixData.update(OwnerRelativesDB, item);
-            }).catch((err) => {
-                let errorMsg = err;
-                console.log(errorMsg);
-            });
-    }
 }
 
