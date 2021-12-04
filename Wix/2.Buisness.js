@@ -1,11 +1,11 @@
-// import wixUsers from 'wix-users';
-// import { fetch } from 'wix-fetch';
-// import wixData from 'wix-data';
-// import { GetCompensationDateRange, GetCreditType } from "public/BuisnessInfo";
-// import { AddBuisnessInfo } from 'public/BuisnessInfoDB';
-// import { AppendBuisnessInfo } from 'public/Storage';
-// import { local } from 'wix-storage';
-// import wixLocation from 'wix-location';
+import wixUsers from 'wix-users';
+import { fetch } from 'wix-fetch';
+import wixData from 'wix-data';
+import { GetCompensationDateRange, GetCreditType } from "public/BuisnessInfo";
+import { AddBuisnessInfo } from 'public/BuisnessInfoDB';
+import { AppendBuisnessInfo } from 'public/Storage';
+import { local } from 'wix-storage';
+import wixLocation from 'wix-location';
 
 const GetFullNameEndPoint = "https://s3ezx1ppdc.execute-api.us-east-1.amazonaws.com/dev/tax/getFullName"
 
@@ -59,33 +59,42 @@ function GetAllRelativeNameId(RelativeInfos) {
     }
     return relativeNameIds; 
 }
-
-function InsertOwnerRelativesIntoDB(relativeInfo, UserId) {
+async function InsertOwnerRelativesIntoDB(relativeInfo, UserId) {
     const relativeNameIds = GetAllRelativeNameId(relativeInfo);
+
+    var result = await wixData.get(OwnerRelativesDB, UserId);
+    console.log("the result of get on ", UserId, " is ", result);
 
     let toUpdate = {
         "_owner": UserId,
-        "ownerrelatives": relativeNameIds
+        "ownerrelatives": relativeNameIds,
+        "_id": UserId
     };
-    // wixData.insert(OwnerRelativesDB, toUpdate)
-    //     .then((results) => {
-    //         let item = results; //see item below
-    //         console.log("inserted this row: ", item);
-    //     })
-    //     .catch((err) => {
-    //         let errorMsg = err;
-    //     });
-    wixData.update(OwnerRelativesDB, toUpdate)
-    	.then( (results) => {
-    		let item = results; //see item below
+    
+    if(result){
+        wixData.update(OwnerRelativesDB, toUpdate)
+        .then((results) => {
+            let item = results; //see item below
+            console.log("updated this row: ", item);
+        })
+        .catch((err) => {
+            let errorMsg = err;
+            console.log("could not update row: ", err);
+        });
+    }else{
+        wixData.insert(OwnerRelativesDB, toUpdate)
+        .then((results) => {
+            let item = results; //see item below
             console.log("inserted this row: ", item);
-        	} )
-        	.catch( (err) => {
-        		let errorMsg = err;
-                console.log("could not update or insert row: ", err);
-        	} );
-}
+        })
+        .catch((err) => {
+            let errorMsg = err;
+            console.log("could not insert row: ", errorMsg);
 
+        });
+    }
+
+}
 function GetRelativeInformation() {
     const UserId = GetCurrentUserId();
 
@@ -175,7 +184,7 @@ function GetBuisnessInfo() {
     return BuisnessInfo;
 }
 
-function OnClickContinue() {
+export function OnClickContinue() {
     GetRelativeInformation();
     local.removeItem("buisnessData");
 
@@ -198,7 +207,7 @@ function OnClickContinue() {
         var randowInt = Math.floor(Math.random() * max);
         return randowInt.toString();
     }
-    local.removeItem("buisnessInfo");
+    //local.removeItem("buisnessInfo");
     AppendBuisnessInfo("buisnessInfo", buisnessInfo);
 
     console.log("the buisnessData is: ", local.getItem("buisnessData"));
@@ -209,4 +218,4 @@ function OnClickContinue() {
 
 }
 
-module.exports = { GetName, GetRelativeIndividualId, IsIdInObjectArray, GetAllRelativeNameId }
+//module.exports = { GetName, GetRelativeIndividualId, IsIdInObjectArray, GetAllRelativeNameId }
