@@ -1,6 +1,6 @@
-import wixData from 'wix-data';
 import wixUsers from 'wix-users';
 import { AppendBuisnessInfo } from 'public/Storage';
+import {GetRelativeNameIds} from 'public/RelativeInfo';
 import { local } from 'wix-storage';
 
 const IsMockOn = false;
@@ -24,29 +24,10 @@ $w.onReady(function () {
 
 const OwnerRelativesDB = "ownersRelatives";
 
-function GetCurrentUserId() {
-    let user = wixUsers.currentUser;
-    let userId = user.id;
-    if (IsMockOn) {
-        userId = MockUserID
-    }
-    return userId;
-}
-
-function LoadNameOptions() {
-    const UserId = GetCurrentUserId(); //my userid: b7011a8c-6275-458f-a088-371bef871f53
-    console.log("loading relatives for current user: ", UserId);
-    wixData.query(OwnerRelativesDB)
-        .eq("userId", UserId)
-        .find()
-        .then((results) => {//owner-relatives
-            console.log("the results are: ", results);
-            //console.log("the relative names are: ", results.items);
-            const row = results.items[0];
-            const relativeList = row["ownerrelatives"];
-            console.log("relativeList ", relativeList);
-            SetOptions(relativeList);
-        })
+async function LoadNameOptions() {
+    const relativeNameIds = await GetRelativeNameIds();
+    
+    SetOptions(relativeNameIds);
 }
 
 function SetOptions(RelativeNames) {
@@ -57,9 +38,9 @@ function getCheckboxOptions(Items) {
     var checkboxOptions = [];
     //check if valid
     for (let index = 0; index < Items.length; index++) {
-        var nameIdCancatenatedStr = Items[index];
-        const fullName = nameIdCancatenatedStr.split("@")[0];
-        const individualId = nameIdCancatenatedStr.split("@")[1];
+        var relativeNameId = Items[index];
+        const fullName = relativeNameId.relativeName;
+        const individualId = relativeNameId.relativeId;
         var option = {
                 "label": fullName,
                 "value": individualId

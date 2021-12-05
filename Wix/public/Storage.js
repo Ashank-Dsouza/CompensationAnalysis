@@ -1,36 +1,39 @@
 import { local } from 'wix-storage';
 const buisnessDataKey = "buisnessData";
 
-// data needs to be retrieved from the following pages:
-// 2. Buisness
-// 4. Owner-relatives
-// 5. PPP
-// 6. PPP2
-
-export function AppendBuisnessInfo(dataKey, dataObject) {
-    var data = local.getItem(buisnessDataKey);
-    if (!data) {
-        InitiateData(buisnessDataKey, dataKey, dataObject)
-    } else {
-        AppendData(buisnessDataKey, data, dataObject, dataKey)
-    }
+export function AppendBuisnessInfo(newProperty, newData) {
+    AppendInfo(buisnessDataKey, newProperty, newData);
 }
 
 export function GetBuisnessData() {
-    var data = local.getItem(buisnessDataKey);
+    return GetData(buisnessDataKey);
+}
+
+function AppendInfo(storageKey, newProperty, newData) {
+    var data = local.getItem(storageKey);
+    if (!data) {
+        InitiateData(storageKey, newProperty, newData)
+    } else {
+        AppendData(storageKey, newData, newProperty)
+    }
+}
+
+function GetData(storageKey) {
+    var data = local.getItem(storageKey);
     var dataObject = JSON.parse(data);
     return dataObject;
 }
 
-function AppendData(key, oldData, newData, dataKey) {
-    local.removeItem(key);
+function AppendData(storageKey, newData, newProperty) {
+    const oldData = local.getItem(buisnessDataKey);
+    local.removeItem(storageKey);
     var dataObject = JSON.parse(oldData);
-    dataObject[dataKey] = newData;
-    local.setItem(key, JSON.stringify(dataObject));
+    dataObject[newProperty] = newData;
+    local.setItem(storageKey, JSON.stringify(dataObject));
 }
 
-function InitiateData(key, dataName, data) {
+function InitiateData(storageKey, property, data) {
     var newData = {}
-    newData[dataName] = data;
-    local.setItem(key, JSON.stringify(newData));
+    newData[property] = data;
+    local.setItem(storageKey, JSON.stringify(newData));
 }

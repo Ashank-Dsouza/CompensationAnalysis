@@ -34,7 +34,23 @@ export function GetUserDetails() {
 //     buisnessInfo: {
 //         startDate: "01-01-2021", //MM/DD/YYYY
 //         endDate: "01-01-2021",
-//         creditType: "RD"
+//         creditType: "RD",
+//         enteredBuisnessInfo: {
+//              buisnessName: null,
+//              tradeName: null,
+//              EIN: null,
+//              buisnessAddress: null,
+//              buisnessPhNo: null,
+//              buisnessStartDate: null,
+//              industry: null,
+//              revenue: null
+//          }
+//       enteredRepresentative: {
+//              name: null,
+//              title: null,
+//              phNo: null,
+//              email: null,
+//          }
 //     }
 
 //     selectedRelatives:  ["830430jdkwjek", "lewli39093i34"],
