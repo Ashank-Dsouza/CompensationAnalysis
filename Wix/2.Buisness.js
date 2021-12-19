@@ -1,6 +1,4 @@
 import wixUsers from 'wix-users';
-import { fetch } from 'wix-fetch';
-import wixData from 'wix-data';
 import { GetCompensationDateRange, GetCreditType } from "public/BuisnessInfo";
 import { AddBuisnessInfo } from 'public/BuisnessInfoDB';
 import { AppendBuisnessInfo } from 'public/Storage';
@@ -26,6 +24,7 @@ function GetOnlyChars(str) {
 }
 
 function GetStateCode(address) {
+    console.log("the address passed to GetStateCode is: ", address);
     var addressArray = address.split(',');
 
     var arrLen = addressArray.length;
@@ -74,14 +73,10 @@ function AddBuisnessDataToStore(buisnessInfo) {
 function GetCurrentUserId() {
     let user = wixUsers.currentUser;
     let userId = user.id;
-    if (IsMockOn) {
-        userId = MockUserID
-    }
     return userId;
 }
 
 export function OnClickContinue() {
-    GetRelativeInformation();
     local.removeItem("buisnessData");
 
     var BuisnessInfo = GetBuisnessInfo();
@@ -117,23 +112,23 @@ function GetUserInput() {
 function GetEnteredBuisnessInfo() {
     var enteredBuisnessInfo = {
         buisnessName: $w('#businessname').value,
-        tradeName: $w('#tradename'),
-        EIN: $w('#ein'),
-        buisnessAddress: $w('#businessaddress'),
-        buisnessPhNo: $w('#businessphone'),
-        buisnessStartDate: $w('#dateformed'),
-        industry: $w('#industry'),
-        revenue: $w('#revenue')
+        tradeName: $w('#tradename').value,
+        EIN: $w('#ein').value,
+        buisnessAddress: $w('#businessaddress').value,
+        buisnessPhNo: $w('#businessphone').value,
+        buisnessStartDate: $w('#dateformed').value,
+        industry: $w('#industry').value,
+        revenue: $w('#revenue').value
     }
     return enteredBuisnessInfo;
 }
 
 function GetEnteredRepInfo(params) {
     var representativeInfo = {
-        name:  $w('#authorizedrep'),
-        title:  $w('#title'),
-        phNo:  $w('#phonerep'),
-        email:  $w('#email'),
+        name:  $w('#authorizedrep').value,
+        title:  $w('#title').value,
+        phNo:  $w('#phonerep').value,
+        email:  $w('#email').value,
     }
     return representativeInfo;
 }

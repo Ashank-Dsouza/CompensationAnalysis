@@ -1,6 +1,6 @@
 import wixUsers from 'wix-users';
 import { AppendBuisnessInfo } from 'public/Storage';
-import {GetUserDetails} from 'public/Storage';
+import {GetUserDetails} from 'public/UserDetails';
 import { local } from 'wix-storage';
 
 const buisnessDataKey = "buisnessData";
