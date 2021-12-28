@@ -72,6 +72,9 @@ function PopulateQuarterTable(QuartersData) {
 
         var quarterData = QuartersData[quarter];
 
+        let quarterNameElement = $item("#quarter");
+        quarterNameElement.text = quarter;
+
         let repeatedElement = $item("#wages");
         repeatedElement.text = quarterData.gross_wages.toString();
 
