@@ -1,7 +1,6 @@
 import wixUsers from 'wix-users';
-import { GetCompensationDateRange, GetCreditType } from "public/BuisnessInfo";
-import { AddBuisnessInfo } from 'public/BuisnessInfoDB';
 import { AppendBuisnessInfo } from 'public/Storage';
+import { GetRevenueInfo } from 'public/BuisnessInfo'
 import { local } from 'wix-storage';
 
 
@@ -24,7 +23,6 @@ function GetOnlyChars(str) {
 }
 
 function GetStateCode(address) {
-    console.log("the address passed to GetStateCode is: ", address);
     var addressArray = address.split(',');
 
     var arrLen = addressArray.length;
@@ -45,7 +43,7 @@ function GetBuisnessInfo() {
     var buisnessInfoInput = userInput.buisnessInfo;
 
     var IsRevenueLessThanMillion = GetIsRevenueLessThanMillion(buisnessInfoInput.revenue);
-    var stateCode = GetStateCode(buisnessInfoInput.buisnessAddress);
+    var stateCode = GetStateCode(buisnessInfoInput.buisnessAddress.formatted);
     var buisnessStartDate = GetUniversalDate(buisnessInfoInput.buisnessStartDate);
 
     var BuisnessInfo = {
@@ -54,46 +52,32 @@ function GetBuisnessInfo() {
         "isRevenueLessThanMillion": IsRevenueLessThanMillion,
         "stateCode": stateCode
     }
-    console.log("the processed buisness info is : ", BuisnessInfo);
+
     return BuisnessInfo;
 }
 
-function AddBuisnessDataToStore(buisnessInfo) {
+function AddBuisnessDataToStore(revenueInfo, BuisnessInfo) {
     const userInput = GetUserInput();
     const buisnessInfoInput = userInput.buisnessInfo;
     const representativeInfo = userInput.representativeInfo;
     const totalBuisnessInfo = {
-        "buisnessInfo": buisnessInfo,
+        "revenueInfo": revenueInfo,
+        "enteredRevenueInfo": BuisnessInfo,
         "enteredBuisnessInfo": buisnessInfoInput,
         "enteredRepresentative": representativeInfo
     }
     AppendBuisnessInfo("buisnessInfo", totalBuisnessInfo);
 }
 
-function GetCurrentUserId() {
-    let user = wixUsers.currentUser;
-    let userId = user.id;
-    return userId;
-}
-
 export function OnClickContinue() {
-    local.removeItem("buisnessData");
+    //local.removeItem("buisnessData");
 
     var BuisnessInfo = GetBuisnessInfo();
 
-    var dateRange = GetCompensationDateRange(BuisnessInfo)
-    var creditType = GetCreditType(BuisnessInfo)
+    var revenueInfo = GetRevenueInfo(BuisnessInfo);
 
-    const buisnessInfo = {
-        "startDate": dateRange.startDate,
-        "endDate": dateRange.endDate,
-        "creditType": creditType,
-        "userId": GetCurrentUserId()
-    }
 
-    console.log("the buisnessInfo", buisnessInfo);
-
-    AddBuisnessDataToStore(buisnessInfo);
+    AddBuisnessDataToStore(revenueInfo, BuisnessInfo);
 
     console.log("the buisnessData is: ", local.getItem("buisnessData"));
 
@@ -123,7 +107,7 @@ function GetEnteredBuisnessInfo() {
     return enteredBuisnessInfo;
 }
 
-function GetEnteredRepInfo(params) {
+function GetEnteredRepInfo() {
     var representativeInfo = {
         name:  $w('#authorizedrep').value,
         title:  $w('#title').value,

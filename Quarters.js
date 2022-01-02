@@ -1,68 +1,15 @@
-const QuartersData = {
-    "Quarters": {
-        "2Q20": {
-            "gross_wages": 100932.82,
-            "qualified_wages": 100932.82,
-            "refundable": 120111.20,
-            "non_refundable": 2010.92,
-            "total_credits": 8100.11,
-        },
+import {GetUserDetails} from 'public/UserDetails';
+import {GetQuarters} from 'public/Storage';
 
-        "3Q20":
-        {
-            "gross_wages": 100932.82,
-            "qualified_wages": 100932.82,
-            "refundable": 120111.20,
-            "non_refundable": 2010.92,
-            "total_credits": 8100.11,
-        },
+$w.onReady(function () {
 
-        "4Q20":
-        {
-            "gross_wages": 100932.82,
-            "qualified_wages": 100932.82,
-            "refundable": 120111.20,
-            "non_refundable": 2010.92,
-            "total_credits": 8100.11,
-        },
-
-        "1Q21":
-        {
-            "gross_wages": 100932.82,
-            "qualified_wages": 100932.82,
-            "refundable": 120111.20,
-            "non_refundable": 2010.92,
-            "total_credits": 8100.11,
-        },
-
-        "2Q21":
-        {
-            "gross_wages": 100932.82,
-            "qualified_wages": 100932.82,
-            "refundable": 120111.20,
-            "non_refundable": 2010.92,
-            "total_credits": 8100.11,
-        },
-
-        "3Q21":
-        {
-            "gross_wages": 100932.82,
-            "qualified_wages": 100932.82,
-            "refundable": 120111.20,
-            "non_refundable": 2010.92,
-            "total_credits": 8100.11,
-        },
-
-        "4Q21":
-        {
-            "gross_wages": 100932.82,
-            "qualified_wages": 100932.82,
-            "refundable": 120111.20,
-            "non_refundable": 2010.92,
-            "total_credits": 8100.11,
-        },
-    }
-}
+    //PopulateEnteredInfo()
+    var QuarterData = GetQuarters();
+    if(QuarterData)
+        PopulateQuarterTable(QuarterData.Quarters);
+    else
+        console.log("no data to display.");
+});
 
 const Quarters = ["2Q20", "3Q20", "4Q20", "1Q21", "2Q21", "3Q21", "4Q21"]
 
@@ -89,3 +36,95 @@ function PopulateQuarterTable(QuartersData) {
       } );
 }
 
+function PopulateBuisnessInfo(enteredBuisnessInfo) {
+    // populate the buisness name    
+    const buisnessName = enteredBuisnessInfo?.buisnessName;
+    $w("#buisnessName").text = buisnessName;
+
+    // populate the trade name
+    const tradeName = enteredBuisnessInfo?.tradeName;
+    $w("#tradeName").text = tradeName;
+
+    // populate the ein 
+    const EIN = enteredBuisnessInfo?.EIN;
+    $w("#EIN").text = EIN;
+
+    // populate the buisness phone
+    const buisnessPhone = enteredBuisnessInfo?.buisnessPhNo;
+    $w("#buisnessPhone").text = buisnessPhone;
+
+    // populate the buisness Address 
+    const buisnessAddress =  enteredBuisnessInfo?.buisnessAddress?.formatted;
+    $w("#buisnessAddress").text = buisnessAddress;
+
+    // populate the buisness Start Date
+    const buisnessStartDate =  enteredBuisnessInfo?.buisnessStartDate;
+    $w("#buisnessStartDate").text = buisnessStartDate;
+
+    // populate the industry
+    const industry =  enteredBuisnessInfo.industry;
+    $w("#industry").text = industry;
+
+    // populate the revenue
+    const revenue =  enteredBuisnessInfo.revenue;
+
+    if(revenue === "LessThanMillion"){
+        $w("#revenue").text = "Less Than One Million";
+    }else{
+        $w("#revenue").text = "More Than One Million";
+    }
+}
+
+function PopulateRepresentativeInfo(enteredRepresentative) {
+    const name =  enteredRepresentative.name;
+    $w("#name").text = name;
+
+    const title =  enteredRepresentative.title;
+    $w("#title").text = title;
+
+    const phNo =  enteredRepresentative.phNo;
+    $w("#phNo").text = phNo;
+
+    const email =  enteredRepresentative.email;
+    $w("#email").email = email;
+}
+
+function PopulateEnteredInfo() {
+	console.log("PopulateEnteredInfo");
+    const userDetails = GetUserDetails()
+	console.log("userDetails", userDetails);
+
+    var buisnessInfo = userDetails.buisnessInfo.enteredBuisnessInfo;
+
+    if(buisnessInfo){
+		console.log("buisnessInfo", buisnessInfo);
+        PopulateBuisnessInfo(buisnessInfo)
+    }
+
+    //---------------------------------------------
+    // this is the population for the entered Representative
+    //name
+    var representativeInfo = userDetails.buisnessInfo.enteredRepresentative;
+    if(representativeInfo){
+		console.log("representativeInfo", representativeInfo);
+        PopulateRepresentativeInfo(representativeInfo)
+    }
+    
+}
+
+
+// {
+//     buisnessInfo: null,
+//     selectedRelatives: null,
+//     loanData:{
+//         first: {
+//             loanAmount: null,
+//             loanDate: null,
+//             loanNonPayrollExpense: null
+//         },
+//         second: {
+//             loanAmount: null,
+//             loanDate: null,
+//             loanNonPayrollExpense: null
+//     }
+// }

@@ -26,7 +26,7 @@ describe("Testing Input processing in 2. Buisness page ....", () => {
 	});
 });
 
-describe.only("Testing 2.Buisness, populate owner relatives database", () => {
+describe("Testing 2.Buisness, populate owner relatives database", () => {
 
 	it("Testing GetName", () => {
 
