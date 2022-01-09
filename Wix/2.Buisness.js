@@ -12,6 +12,7 @@ function GetIsRevenueLessThanMillion(RawRevenue) {
     }
 }
 
+// later on this needs to be changes from local browser time zone to international time zone. 
 function GetUniversalDate(localDate) {
     var universalDate = localDate;
     return universalDate;
@@ -22,18 +23,24 @@ function GetOnlyChars(str) {
     return charStr;
 }
 
+
 function GetStateCode(address) {
+    // address will be something like 1035 E Brokaw Rd Ste 10, San Jose, CA 95131, USA
     var addressArray = address.split(',');
 
     var arrLen = addressArray.length;
 
     var stateCodeAndPinCode = null;
 
+    //stateCodeAndPinCode will be: 'CA 95131'
+    //final return value will be 'CA'
+
     if (arrLen >= 2) {
         stateCodeAndPinCode = addressArray[arrLen - 2]
     } else {
         return null;
     }
+
 
     return GetOnlyChars(stateCodeAndPinCode);
 }
@@ -83,6 +90,7 @@ export function OnClickContinue() {
 
 }
 
+// this function returns all the entered info(entered by the user)
 function GetUserInput() {
     const buisnessInfo = GetEnteredBuisnessInfo();
     const representativeInfo = GetEnteredRepInfo();
