@@ -1,6 +1,8 @@
 import { GetBuisnessData } from 'public/Storage';
 
+// this file formats data according to the below format
 
+// returns UserDetails in proper format for the fullName api 
 export function GetUserDetails() {
     const userDetails = {
         buisnessInfo: null,

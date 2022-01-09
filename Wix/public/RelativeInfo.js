@@ -13,7 +13,7 @@ function GetName(relativeInfo) {
 }
 
 function GetRelativeIndividualId(relativeInfo) {
-    const individualId =  relativeInfo['individual_id'].split('#')[0];
+    const individualId =  relativeInfo['individual_id'].split('#')[0]; // relative id is the first string seperated by hash symbols(#)
     return individualId;
 }
 

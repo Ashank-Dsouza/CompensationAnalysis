@@ -1,5 +1,10 @@
 import { local } from 'wix-storage';
 const buisnessDataKey = "buisnessData";
+const totalCreditsKey = "totalCredits";
+
+/* 
+This file deals with session storage data.
+*/
 
 export function AppendBuisnessInfo(newProperty, newData) {
     AppendInfo(buisnessDataKey, newProperty, newData);
@@ -7,6 +12,14 @@ export function AppendBuisnessInfo(newProperty, newData) {
 
 export function GetBuisnessData() {
     return GetData(buisnessDataKey);
+}
+
+export function StoreQuarters(newData){
+    local.setItem(totalCreditsKey, JSON.stringify(newData));
+}
+
+export function GetQuarters() {
+    return GetData(totalCreditsKey);
 }
 
 function AppendInfo(storageKey, newProperty, newData) {
