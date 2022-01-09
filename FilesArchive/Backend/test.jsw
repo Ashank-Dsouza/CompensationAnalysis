@@ -1,0 +1,15 @@
+import {local} from 'wix-storage';
+
+const buisnessData = "buisnessData";
+
+function GetBuisnessData() {
+    const buisnessData = local.getItem(buisnessData);
+    return buisnessData;
+}
+
+export function AddBuisnessInfo() {
+    var data = GetBuisnessData();
+    console.log(data);
+
+}
+
