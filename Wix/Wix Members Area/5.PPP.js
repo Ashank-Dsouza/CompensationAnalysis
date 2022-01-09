@@ -1,10 +1,5 @@
 import { AppendBuisnessInfo } from 'public/Storage';
 import {local} from 'wix-storage';
-
-$w.onReady(function () {
-
-});
-
 const buisnessDataKey = "buisnessData";
 
 export function ppp1continue_click(event) {
@@ -23,4 +18,6 @@ export function ppp1continue_click(event) {
 	AppendBuisnessInfo("loanData", loanData);
 
 	console.log("the businessData is now: ", local.getItem(buisnessDataKey));
+
+
 }
